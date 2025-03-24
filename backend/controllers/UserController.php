@@ -207,5 +207,31 @@ class UserController
         }
 
     }
+
+    public function getPersonalInformation()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if ($user) {
+            echo json_encode([
+                'status' => 'success',
+                'user' => $user
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+    }
 }
 
