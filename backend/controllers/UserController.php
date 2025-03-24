@@ -139,4 +139,73 @@ class UserController
             exit();
         }
     }
+
+    public function updatePassword()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (empty($data)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'No Data Provided'
+            ]);
+            exit();
+        }
+        $newPassword = trim($data['newPassword']);
+        $confirmNewPassword = trim($data['confirmNewPassword']);
+        $password = $user['password'];
+        $oldPassword = trim($data['oldPassword']);
+        if (empty($newPassword) || empty($confirmNewPassword)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'All fields are required'
+            ]);
+            exit();
+        }
+        if (!password_verify($oldPassword, $password)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Incorrect Password'
+            ]);
+            exit();
+        }
+        if ($newPassword !== $confirmNewPassword) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Passwords do not match'
+            ]);
+            exit();
+        }
+        $isUpdated = $this->userRepository->updatePassword($userID, $newPassword);
+        if ($isUpdated) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Password updated successfully'
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'cannot update password'
+            ]);
+            exit();
+        }
+
+    }
 }
+
