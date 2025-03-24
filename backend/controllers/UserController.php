@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../repositories/user/UserRepository.php";
-
+require_once __DIR__ . "/../utils/getBearer.php";
 class UserController
 {
     private $userRepository;
@@ -96,7 +96,47 @@ class UserController
                 'message' => 'Invalid credentials'
             ]);
         }
+    }
 
-
+    public function update()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (empty($data)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'At least one field is required'
+            ]);
+            exit();
+        }
+        $IsUpdated = $this->userRepository->updateUser($userID, $data);
+        if ($IsUpdated) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Information Updated Successfully'
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Cannot Update Information'
+            ]);
+            exit();
+        }
     }
 }

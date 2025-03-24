@@ -20,6 +20,7 @@ if ($request == '') {
 $apis = [
     '/signup' => ['controller' => 'UserController', 'method' => 'signup', 'repository' => 'UserRepository'],
     '/login' => ['controller' => 'UserController', 'method' => 'login', 'repository' => 'UserRepository'],
+    '/user/update' => ['controller' => 'UserController', 'method' => 'update', 'repository' => 'UserRepository'],
 ];
 
 if (isset($apis[$request])) {
