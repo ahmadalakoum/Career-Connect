@@ -22,6 +22,7 @@ $apis = [
     '/login' => ['controller' => 'UserController', 'method' => 'login', 'repository' => 'UserRepository'],
     '/user/update' => ['controller' => 'UserController', 'method' => 'update', 'repository' => 'UserRepository'],
     '/user/update-password' => ['controller' => 'UserController', 'method' => 'updatePassword', 'repository' => 'UserRepository'],
+    '/user/profile' => ['controller' => 'UserController', 'method' => 'getPersonalInformation', 'repository' => 'UserRepository'],
 ];
 
 if (isset($apis[$request])) {
