@@ -12,11 +12,12 @@ class UserRepository implements UserRepositoryInterface
     }
     public function createUser(array $userData): bool
     {
-        $sql = "INSERT INTO users (username,email,password) VALUES (:username,:email,:password)";
+        $sql = "INSERT INTO users (username,email,password,role) VALUES (:username,:email,:password,:role)";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             ":username" => $userData['username'],
             ":email" => $userData['email'],
+            ":role" => $userData['role'],
             ":password" => password_hash($userData['password'], PASSWORD_BCRYPT)
         ]);
     }

@@ -16,10 +16,11 @@ class UserController
         $username = trim($data['username']);
         $email = trim($data['email']);
         $password = trim($data['password']);
+        $role = trim($data["role"]);
         $confirmPassword = trim($data['confirmPassword']);
 
         //check if values are empty
-        if (empty($username) || empty($email) || empty($password) || empty($confirmPassword)) {
+        if (empty($username) || empty($email) || empty($password) || empty($confirmPassword) || empty($role)) {
             echo json_encode([
                 "status" => "error",
                 "message" => "All Fields Are Required"
