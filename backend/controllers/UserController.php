@@ -20,7 +20,6 @@ class UserController
 
         //check if values are empty
         if (empty($username) || empty($email) || empty($password) || empty($confirmPassword)) {
-            http_response_code(400);
             echo json_encode([
                 "status" => "error",
                 "message" => "All Fields Are Required"
@@ -29,16 +28,22 @@ class UserController
         }
         //check if email is already registered
         if ($this->userRepository->isEmailTaken($email)) {
-            http_response_code(400);
             echo json_encode([
                 "status" => "error",
                 "message" => "Email already Exists"
             ]);
             exit();
         }
+        //check if username is already taken
+        if ($this->userRepository->isUsernameTaken($username)) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Username already Exists"
+            ]);
+            exit();
+        }
         //check if passwords match
         if ($password !== $confirmPassword) {
-            http_response_code(400);
             echo json_encode([
                 "status" => "error",
                 "message" => "Passwords Do Not Match"
@@ -59,6 +64,36 @@ class UserController
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Error During Registration'
+            ]);
+        }
+    }
+
+    public function login()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $email = trim($data['email']);
+        $password = trim($data['password']);
+
+        if (empty($email) || empty($password)) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "All Fields Are Required"
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->validateUserCredentials($email, $password);
+
+        if ($user) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Login in successfully',
+                'user' => $user
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid credentials'
             ]);
         }
 
