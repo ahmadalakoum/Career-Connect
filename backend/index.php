@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/connection/connection.php';
 require_once __DIR__ . "/repositories/user/UserRepository.php";
-
+require_once __DIR__ . "/repositories/job/JobRepository.php";
 
 // Define your base directory 
 $base_dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
@@ -23,19 +23,29 @@ $apis = [
     '/user/update' => ['controller' => 'UserController', 'method' => 'update', 'repository' => 'UserRepository'],
     '/user/update-password' => ['controller' => 'UserController', 'method' => 'updatePassword', 'repository' => 'UserRepository'],
     '/user/profile' => ['controller' => 'UserController', 'method' => 'getPersonalInformation', 'repository' => 'UserRepository'],
+    '/add-job' => ['controller' => 'JobController', 'method' => 'addJob', 'repository' => 'JobRepository'],
 ];
 
 if (isset($apis[$request])) {
     $controllerName = $apis[$request]['controller'];
     $method = $apis[$request]['method'];
     $repositoryName = $apis[$request]['repository'];
+    $repositoryPaths = [
+        'UserRepository' => __DIR__ . "/repositories/user/UserRepository.php",
+        'JobRepository' => __DIR__ . "/repositories/job/JobRepository.php"
+    ];
 
 
     require_once __DIR__ . "/controllers/{$controllerName}.php";
-    require_once __DIR__ . "/repositories/user/{$repositoryName}.php";
-
-    $repository = new $repositoryName($pdo);
-    $controller = new $controllerName($repository);
+    require_once $repositoryPaths[$repositoryName];
+    if ($repositoryName === 'JobRepository') {
+        $jobRepository = new JobRepository($pdo);
+        $userRepository = new UserRepository($pdo);
+        $controller = new JobController($jobRepository, $userRepository);
+    } else {
+        $repository = new $repositoryName($pdo);
+        $controller = new $controllerName($repository);
+    }
     if (method_exists($controller, $method)) {
         $controller->$method();
     } else {
