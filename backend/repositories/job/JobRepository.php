@@ -33,7 +33,7 @@ class JobRepository implements JobRepositoryInterface
         $stmt->execute([
             ':id' => $id
         ]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     public function getJobs(int $employer_id): array|null
@@ -41,7 +41,7 @@ class JobRepository implements JobRepositoryInterface
         $sql = "SELECT * FROM jobs WHERE employer_id= :employer_id ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':employer_id' => $employer_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
     }
 
     public function updateJob(int $id, int $employer_id, array $updateData): bool

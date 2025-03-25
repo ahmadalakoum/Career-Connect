@@ -79,4 +79,239 @@ class JobController
             exit();
         }
     }
+
+    //function to get the job
+    public function getJob()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+        $job_id = intval($_GET['job_id']);
+        if (!isset($job_id) || empty($job_id)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Job ID is not passed'
+            ]);
+            exit();
+        }
+        $job = $this->jobRepository->getJobById($job_id);
+        if ($job !== null) {
+            echo json_encode([
+                'status' => 'success',
+                'job' => $job
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'job is not found'
+            ]);
+            exit();
+        }
+    }
+    public function getJobsEmployer()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+        $jobs = $this->jobRepository->getJobs($userID);
+        if ($jobs !== null) {
+            echo json_encode([
+                'status' => 'success',
+                'job' => $jobs
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'jobs not found'
+            ]);
+            exit();
+        }
+    }
+
+    public function updateJob()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+        $job_id = intval($_GET['job_id']);
+        if (!isset($job_id) || empty($job_id)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Job ID is not passed'
+            ]);
+            exit();
+        }
+        $job = $this->jobRepository->getJobById($job_id);
+        if ($job === null) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'job is not found'
+            ]);
+            exit();
+        }
+
+        if (intval($job['employer_id']) !== intval($userID)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Cannot update a job you did not post'
+            ]);
+            exit();
+        }
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (empty($data)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'At least one field is required'
+            ]);
+            exit();
+        }
+        $isUpdated = $this->jobRepository->updateJob($job['id'], $userID, $data);
+        if ($isUpdated) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Job updated successfully'
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Error updating job'
+            ]);
+            exit();
+        }
+
+    }
+
+    public function deleteJob()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+        $job_id = intval($_GET['job_id']);
+        if (!isset($job_id) || empty($job_id)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Job ID is not passed'
+            ]);
+            exit();
+        }
+        $job = $this->jobRepository->getJobById($job_id);
+        if ($job === null) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'job is not found'
+            ]);
+            exit();
+        }
+
+        if (intval($job['employer_id']) !== intval($userID)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Cannot delete a job you did not post'
+            ]);
+            exit();
+        }
+        $isDeleted = $this->jobRepository->deleteJob($job_id, $userID);
+        if ($isDeleted) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'job deleted successfully'
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'error deleting the job'
+            ]);
+            exit();
+        }
+    }
+
+    public function getAllJobs()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+        $jobs = $this->jobRepository->getAllJobs();
+        if ($jobs) {
+            echo json_encode([
+                'status' => 'success',
+                'jobs' => $jobs
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'No jobs found'
+            ]);
+        }
+    }
+
 }
