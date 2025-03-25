@@ -313,5 +313,48 @@ class JobController
             ]);
         }
     }
+    public function filter()
+    {
+        $userID = getBearerToken();
+        if (!$userID) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ]);
+            exit();
+        }
+        $user = $this->userRepository->getUserById($userID);
+        if (!$user) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+            exit();
+        }
+
+
+        $filterCriteria = [
+            'title' => $_GET['title'] ?? null,
+            'description' => $_GET['description'] ?? null,
+            'category' => $_GET['category'] ?? null,
+            'location' => $_GET['location'] ?? null
+        ];
+
+        $filterCriteria = array_filter($filterCriteria);
+        $jobs = $this->jobRepository->filterJobs($filterCriteria);
+        if ($jobs) {
+            echo json_encode([
+                'status' => 'success',
+                'jobs' => $jobs
+            ]);
+            exit();
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'No Jobs found'
+            ]);
+            exit();
+        }
+    }
 
 }

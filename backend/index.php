@@ -29,6 +29,7 @@ $apis = [
     '/update' => ['controller' => 'JobController', 'method' => 'updateJob', 'repository' => 'JobRepository'],
     '/delete' => ['controller' => 'JobController', 'method' => 'deleteJob', 'repository' => 'JobRepository'],
     '/jobs' => ['controller' => 'JobController', 'method' => 'getAllJobs', 'repository' => 'JobRepository'],
+    '/search' => ['controller' => 'JobController', 'method' => 'filter', 'repository' => 'JobRepository'],
 ];
 
 if (isset($apis[$request])) {
