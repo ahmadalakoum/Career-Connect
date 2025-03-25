@@ -24,6 +24,11 @@ $apis = [
     '/user/update-password' => ['controller' => 'UserController', 'method' => 'updatePassword', 'repository' => 'UserRepository'],
     '/user/profile' => ['controller' => 'UserController', 'method' => 'getPersonalInformation', 'repository' => 'UserRepository'],
     '/add-job' => ['controller' => 'JobController', 'method' => 'addJob', 'repository' => 'JobRepository'],
+    '/job' => ['controller' => 'JobController', 'method' => 'getJob', 'repository' => 'JobRepository'],
+    '/employer-jobs' => ['controller' => 'JobController', 'method' => 'getJobsEmployer', 'repository' => 'JobRepository'],
+    '/update' => ['controller' => 'JobController', 'method' => 'updateJob', 'repository' => 'JobRepository'],
+    '/delete' => ['controller' => 'JobController', 'method' => 'deleteJob', 'repository' => 'JobRepository'],
+    '/jobs' => ['controller' => 'JobController', 'method' => 'getAllJobs', 'repository' => 'JobRepository'],
 ];
 
 if (isset($apis[$request])) {
