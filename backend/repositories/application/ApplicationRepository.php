@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ . "/ApplicationRepositoryInterface.php";
 class ApplicationRepository implements ApplicationRepositoryInterface
 {
     private $pdo;
@@ -20,50 +20,46 @@ class ApplicationRepository implements ApplicationRepositoryInterface
         ]);
     }
 
-    public function getApplicationById(int $id): array|null
+    public function getApplicationById(int $id, int $userID): array|null
     {
-        $sql = "SELECT * FROM applications WHERE id = :id";
+        $sql = "SELECT * FROM applications WHERE id = :id AND applicant_id = :userID";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            ':id' => $id
+            ':id' => $id,
+            ":userID" => $userID
         ]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function getApplications(): array|null
+    public function getApplications(int $userID): array|null
     {
-        $sql = "SELECT * FROM applications";
+        $sql = "SELECT * FROM applications WHERE applicant_id =:userID";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute([
+            ':userID' => $userID
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function deleteApplication(int $id): bool
+    public function deleteApplication(int $id, int $userID): bool
     {
-        $sql = "DELETE FROM applications WHERE id = :id";
+        $sql = "DELETE FROM applications WHERE id = :id and applicant_id=:userID";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
-            ":id" => $id
+            ":id" => $id,
+            ":userID" => $userID
         ]);
     }
 
-    public function getApplicationsByUserId(int $userId): array|null
-    {
-        $sql = "SELECT * FROM applications WHERE applicant_id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ":id" => $userId
-        ]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    public function getApplicationsByJobId(int $jobId): array|null
-    {
-        $sql = "SELECT * FROM applications WHERE job_id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ":id" => $jobId
-        ]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    // public function getApplicationsByJobId(int $jobId): array|null
+    // {
+    //     $sql = "SELECT * FROM applications WHERE job_id = :id";
+    //     $stmt = $this->pdo->prepare($sql);
+    //     $stmt->execute([
+    //         ":id" => $jobId
+    //     ]);
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
 
 
 }
