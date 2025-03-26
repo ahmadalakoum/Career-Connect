@@ -4,12 +4,11 @@ interface ApplicationRepositoryInterface
 {
     public function create(array $data): bool;
 
-    public function getApplicationById(int $id): array|null;
+    public function getApplicationById(int $id, int $userID): array|null;
 
-    public function getApplications(): array|null;
+    public function getApplications(int $userID): array|null;
 
-    public function deleteApplication(int $id): bool;
+    public function deleteApplication(int $id, int $userID): bool;
 
-    public function getApplicationsByUserId(int $userId): array|null;
-    public function getApplicationsByJobId(int $jobId): array|null;
+    // public function getApplicationsByJobId(int $jobId): array|null;
 }

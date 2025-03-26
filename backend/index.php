@@ -30,6 +30,10 @@ $apis = [
     '/delete' => ['controller' => 'JobController', 'method' => 'deleteJob', 'repository' => 'JobRepository'],
     '/jobs' => ['controller' => 'JobController', 'method' => 'getAllJobs', 'repository' => 'JobRepository'],
     '/search' => ['controller' => 'JobController', 'method' => 'filter', 'repository' => 'JobRepository'],
+    '/apply' => ['controller' => 'ApplicationController', 'method' => 'apply', 'repository' => 'ApplicationRepository'],
+    '/view-application' => ['controller' => 'ApplicationController', 'method' => 'viewApplication', 'repository' => 'ApplicationRepository'],
+    '/view-applications' => ['controller' => 'ApplicationController', 'method' => 'viewAllApplications', 'repository' => 'ApplicationRepository'],
+    '/delete-application' => ['controller' => 'ApplicationController', 'method' => 'deleteApplication', 'repository' => 'ApplicationRepository'],
 ];
 
 if (isset($apis[$request])) {
@@ -37,6 +41,7 @@ if (isset($apis[$request])) {
     $method = $apis[$request]['method'];
     $repositoryName = $apis[$request]['repository'];
     $repositoryPaths = [
+        'ApplicationRepository' => __DIR__ . "/repositories/application/ApplicationRepository.php",
         'UserRepository' => __DIR__ . "/repositories/user/UserRepository.php",
         'JobRepository' => __DIR__ . "/repositories/job/JobRepository.php"
     ];
@@ -44,7 +49,12 @@ if (isset($apis[$request])) {
 
     require_once __DIR__ . "/controllers/{$controllerName}.php";
     require_once $repositoryPaths[$repositoryName];
-    if ($repositoryName === 'JobRepository') {
+    if ($repositoryName === 'ApplicationRepository') {
+        $applicationRepository = new ApplicationRepository($pdo);
+        $jobRepository = new JobRepository($pdo);
+        $userRepository = new UserRepository($pdo);
+        $controller = new ApplicationController($applicationRepository, $userRepository, $jobRepository);
+    } else if ($repositoryName === 'JobRepository') {
         $jobRepository = new JobRepository($pdo);
         $userRepository = new UserRepository($pdo);
         $controller = new JobController($jobRepository, $userRepository);
