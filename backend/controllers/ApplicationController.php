@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../utils/cors.php";
 require_once __DIR__ . "/../repositories/application/ApplicationRepository.php";
 require_once __DIR__ . "/../utils/getBearer.php";
 require_once __DIR__ . "/../repositories/user/UserRepository.php";
