@@ -22,7 +22,7 @@ class ApplicationRepository implements ApplicationRepositoryInterface
 
     public function getApplicationById(int $id, int $userID): array|null
     {
-        $sql = "SELECT * FROM applications WHERE id = :id AND applicant_id = :userID";
+        $sql = "SELECT applications.id as application_id,jobs.* FROM applications JOIN jobs ON applications.job_id = jobs.id WHERE applications.id = :id AND applicant_id = :userID";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':id' => $id,
@@ -33,7 +33,7 @@ class ApplicationRepository implements ApplicationRepositoryInterface
 
     public function getApplications(int $userID): array|null
     {
-        $sql = "SELECT * FROM applications WHERE applicant_id =:userID";
+        $sql = "SELECT applications.id as application_id ,jobs.* FROM applications JOIN jobs ON applications.job_id=jobs.id WHERE applications.applicant_id =:userID";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':userID' => $userID
